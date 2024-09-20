@@ -64,7 +64,12 @@
          (display "Took too long") (newline))
         ((> (get-steps-count next-robot) 1) ;If frontier isn't adjacent
          (draw-visited (car robot) (cadr robot))
-         (walk-back (get-path next-robot)) ;walk to the far frontier
+         (display "back to start")
+         (newline)
+         (walk-back (reverse(get-path robot))) ;Walk to the start
+         (display "to new frontiers")
+         (newline)
+         (walk-back (get-path next-robot)) ;Walk to far frontier
          (set! robot (extract))
          (set! current-node robot)
          (search2 grid (+ count 1) stop-count))
@@ -74,6 +79,13 @@
          (set! current-node robot)
          (draw-moved-robot (robot-x) (robot-y))
          (search2 grid (+ count 1) stop-count))))))
+
+         ;Alright so what you have now isnt working, I think we make a new search function that is called whenever
+         ;the frontier isnt adjacent, we then use a new expand function that only expands to visited nodes,
+         ;probably need to mess with grid-new to do this, but yeah we go on visited nodes, and just do the exact same process as search2
+         ;except a little different, but we have that return the path to the far frontier, then we walk that path
+
+         ;so yeah probably not that bad
 
 (define walk-back
   (lambda (path)
