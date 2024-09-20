@@ -15,7 +15,7 @@
 (load "grid-new.ss")
 (load "grid-heap.ss")
 ;(load "grid-BFS.ss")
-(load "grid-Branch-and-bound.ss")
+(load "grid-branch-and-bound.ss")
 (set-goal grid)
 (set-start grid)
 (draw-start)

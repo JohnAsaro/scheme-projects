@@ -6,10 +6,10 @@
 
 (define dist-pt
   (lambda (pt1 pt2)
-	(display "dist-pt")
-	(newline)
-	(display "pt1: ") (display pt1) (newline)
-	(display "pt2: ") (display pt2) (newline)
+	;(display "dist-pt")
+	;(newline)
+	;(display "pt1: ") (display pt1) (newline)
+	;(display "pt2: ") (display pt2) (newline)
 	(let ((distance (+ (abs (- (car pt1) (car pt2)))
                    	(abs (- (cadr pt1) (cadr pt2))))))
   	;(display "distance: ") (display distance) (newline)
@@ -17,9 +17,9 @@
 
 (define dist-start-goal
   (lambda (node)
-  (display "dist-both")
-  (newline)
-  (display node)
+  ;(display "dist-both")
+  ;(newline)
+  ;(display node)
       (+ (dist-pt node goal) (get-steps-count node))))
 
 (define hierarchy ;just to make heapify more readable
@@ -63,15 +63,6 @@
       (=(vector-length heap)0) '())
       ;else
       (vector-ref heap 0)))
-
-;(define front
-;  (lambda ()
-;  (display "front")
-;    ;(display (vector-length heap))
-;    (cond 
-;      [(=(vector-length heap)0) '()]
-;      [(=(vector-length heap)1) (vector-ref heap 0)]
-;      [else(car(vector-ref heap 0))])))
 
 (define extract
   (lambda ()

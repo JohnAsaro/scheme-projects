@@ -4,35 +4,9 @@
 (define heap 
   (make-vector 0))
 
-;(define left_child ;find left child
-;  (lambda (index)
-;    (+(* index 2)1)))  
-
-;(define right_child ;find right child
-;  (lambda (index)
-;    (+(* index 2)2)))
-
-;(define parent_node ;find parent
-;  (lambda (index)
-;    (if (= index 0)
-;        (-1)
-;        ;else
-;        (quotient(- index 1) 2))))
-
-;I just realized you can sort heaps so I might have just made these first guys for nothing
-;(define swap ;swap elements i and j in vec
-;  (lambda (vec i j)
-;    (let* ((temp_j (vector-ref vec j)))
-;      (vector-set! vec j (vector-ref vec i))
-;      (vector-set! vec i temp_j)
-;      (vec)
-;      )
-;    )
-;  )
-
-(define dist_pt
+(define dist-pt
   (lambda (pt1 pt2)
-	;(display "dist_pt")
+	;(display "dist-pt")
 	;(newline)
 	;(display "pt1: ") (display pt1) (newline)
 	;(display "pt2: ") (display pt2) (newline)
@@ -41,32 +15,19 @@
   	;(display "distance: ") (display distance) (newline)
   	distance)))
 
-(define dist_goal
+(define dist-start-goal
   (lambda (node)
-  ;(display "dist_goal")
-    (dist_pt node goal)))
-
-(define dist_start
-  (lambda (node)
-  ;(display "dist_start")
-    (dist_pt node start)))
-
-;(define dist_start_goal
-;  (lambda (node)
-;  (display "dist_both")
-;      (+ (dist_goal node) (dist_start node))))
-
-(define dist_start_goal
-  (lambda (node)
-  ;(display "dist_both")
-      (+ (dist_pt node goal) (dist_pt node start))))
+  ;(display "dist-both")
+  ;(newline)
+  ;(display node)
+      (+ (dist-pt node goal) (get-steps-count node))))
 
 (define hierarchy ;just to make heapify more readable
-  (lambda (node_1 node_2)
+  (lambda (node-1 node-2)
     ;(display "hierarchy")
-    ;(display node_1)
-    ;(display node_2)
-    (< (dist_start_goal node_1) (dist_start_goal node_2)))
+    ;(display node-1)
+    ;(display node-2)
+    (< (dist-start-goal node-1) (dist-start-goal node-2)))
     )
 
 (define heapify
@@ -75,9 +36,9 @@
     (vector-sort! hierarchy heap)))
 
 (define vector-append
-  (lambda (this_heap node)
+  (lambda (this-heap node)
    ;(display "vector-append")
-    (let* ((temp (vector->list this_heap)))
+    (let* ((temp (vector->list this-heap)))
       ;(display "temp before") (display temp)
       ;(display "temp after")
       ;(display (list->vector (append temp (list node))))

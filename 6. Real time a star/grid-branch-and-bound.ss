@@ -87,9 +87,9 @@
 
 (define get-steps-count
   (lambda (node)
-    (newline)
-    (display "get-steps-count")
-    (newline)
+    ;(newline)
+    ;(display "get-steps-count")
+    ;(newline)
     (if (equal? node start)
         0
         ;else
@@ -97,9 +97,9 @@
 
 (define steps-counter
   (lambda (last-node)
-    (newline)
-    (display "steps-counter")
-    (newline)
+    ;(newline)
+    ;(display "steps-counter")
+    ;(newline)
     (if (equal? last-node start)
         0
         ;else
