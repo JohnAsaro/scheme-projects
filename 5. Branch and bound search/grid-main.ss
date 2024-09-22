@@ -1,4 +1,4 @@
-(define num-col-row 20)
+(define num-col-row 5)
 (define pause-num 10000000)
 (define size (floor (/ 700 num-col-row)))
 (define obstacle-density 30)
@@ -15,9 +15,10 @@
 (load "grid-new.ss")
 (load "grid-heap.ss")
 ;(load "grid-BFS.ss")
-(load "grid-branch-and-bound.ss")
+
 (set-goal grid)
 (set-start grid)
+(load "grid-Branch-and-bound.ss")
 (draw-start)
 (draw-goal)
 (draw-robot)

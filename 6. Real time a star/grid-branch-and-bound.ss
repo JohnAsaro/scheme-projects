@@ -5,11 +5,11 @@
 
 (define expand2
   (lambda (point)
-    (newline)
+    ;(newline)
     ;(display "expand2")
     (let ((lst (adjacentv2 point)))
-     (display "expand list2")
-     (display lst)
+     ;(display "expand list2")
+     ;(display lst)
       (set-lst-visited2 lst)
       (add-to-path-lst2 lst point)
       (let loop ((exhaust-lst lst))
@@ -37,20 +37,21 @@
 
 (define search3
   (lambda (grid count stop-count next-node)
-    (display "search3")
-    (newline)
-    (set! robot2 current-node)
-    (block-set! current-node visited2)
-    (display "here?")
+    ;(display "search3")
+    ;(newline)
+    (if (not (null? current-node))
+        (begin (set! robot2 current-node) (block-set! current-node visited2))
+    ;else
+        '())
     (set! fix-later (cons current-node fix-later))
     (set! path-lst2 (list (list current-node '())))
     (search4 grid 1 stop-count next-node)))
 
 (define search4
   (lambda (grid count stop-count next-node)
-    (display "search4")
-    (display heap2)
-    (newline)
+    ;(display "search4")
+    ;(display heap2)
+    ;(newline)
     ;(display count)
     ;(newline)
     (expand2 robot2)
@@ -61,20 +62,20 @@
           (newline))
         ((equal? next-robot next-node)
           (set! robot2 (extract2))
-          (display "Found")
-          (newline)
+          ;(display "Found")
+          ;(newline)
           (let ((path2 (get-path2 next-node)))
-            (display path2)
-            (newline)
-            (let loop ((exhaust-lst fix-later))
-              (if (null? exhaust-lst) '()
-                  ;else
-                  (begin (block-set! (car exhaust-lst) visited) (loop (cdr exhaust-lst)))))
+            ;(display path2)
+            ;(newline)
+        (let loop ((exhaust-lst fix-later))
+              (cond
+                ((null? exhaust-lst) '())
+                ((equal? (car exhaust-lst) goal) (begin (block-set! (car exhaust-lst) -1)(loop(cdr exhaust-lst))))
+                (else (begin (block-set! (car exhaust-lst) visited) (loop (cdr exhaust-lst))))))
          (set! fix-later '())
          (clearheap2)
-         (display "here?") ;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-         (set! path-lst '())
+         ;(display "here?") ;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+         (set! path-lst2 '())
             path2))
         ((>= count stop-count)
           (display "Took too long")
@@ -85,9 +86,9 @@
 
 (define get-path2
   (lambda (last-node)
-  (display "get-path2")
-  (display last-node)
-  (newline)
+  ;(display "get-path2")
+  ;(display last-node)
+  ;(newline)
     (if (equal? last-node current-node)
       (list current-node)
     ;else
@@ -96,9 +97,8 @@
 
 (define get-steps-count2
   (lambda (node)
-    (newline)
-    (display "get-steps-count2")
-    (newline)
+    ;(display "get-steps-count2")
+    ;(newline)
     (if (equal? node current-node)
         0
         ;else
@@ -106,9 +106,8 @@
 
 (define steps-counter2
   (lambda (last-node)
-    (newline)
-    (display "steps-counter2")
-    (newline)
+    ;(display "steps-counter2")
+    ;(newline)
     (if (equal? last-node current-node)
         0
         ;else
