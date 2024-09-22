@@ -1,13 +1,15 @@
 (define path-lst '())
 (define visited 1)
 (define current-node start) ;current-node must be accessible anywhere
+(display current-node)
 
 (define expand 
   (lambda (point)
-    ;(display "expand")
+    (display "expand")
+    (newline)
     (let ((lst (adjacentv point)))
-     ;(display "expand list")
-      ;(display lst)
+     (display "expand list")
+     (display lst)
       (set-lst-visited lst)
       (add-to-path-lst lst point)
       (let loop ((exhaust-lst lst))
@@ -48,6 +50,8 @@
   (lambda (grid count stop-count)
     (pause pause-num)
     (expand robot)
+    (display "search 2")
+    (newline)
     (let ((next-robot (front)))
       (cond
         ((null? next-robot)
@@ -64,9 +68,9 @@
          (display "Took too long") (newline))
         ((> (get-steps-count next-robot) 1) ;If frontier isn't adjacent
          (draw-visited (car robot) (cadr robot))
-         (display "back to start")
-         (newline)
-         (walk-back (reverse(get-path robot))) ;Walk to the start
+         ;(display "back to start")
+         ;(newline)
+         ;(walk-back (reverse(get-path robot))) ;Walk to the start
          (display "to new frontiers")
          (newline)
          (walk-back (get-path next-robot)) ;Walk to far frontier
@@ -89,9 +93,9 @@
 
 (define walk-back
   (lambda (path)
-    ;(display "backtracking along path: ")
-    ;(display path)
-    ;(newline)
+    (display "backtracking along path: ")
+    (display path)
+    (newline)
     (cond
       ((or (null? path) (equal? (car path) current-node))
        '()) ;Stop if path is empty or we've reached current-node
@@ -106,32 +110,32 @@
         
 (define get-path
   (lambda (last-node)
+    (display "get-path")
+    (newline)
     (if (equal? last-node current-node)
         (list current-node)
-        (let ((result (assoc last-node path-lst)))
-          (if result
-              (let ((next-node (cadr result)))
-                (append (get-path next-node) (list last-node)))
-              '())))))  ;Return an empty list if assoc returns #f
+        ;else
+        (search3 grid 0 20000 last-node))))
 
 (define get-steps-count ;get g(n)
   (lambda (node)
-    ;(newline)
-    ;(display "get-steps-count")
-    ;(newline)
+    (newline)
+    (display "get-steps-count")
+    (newline)
     (if (equal? node current-node)
         0
         ;else
-        (steps-counter node))))
+        (steps-counter (get-path node)))))
 
 (define steps-counter
-  (lambda (last-node)
-    (if (equal? last-node current-node)
+  (lambda (path)
+    (display steps-counter)
+    (display path)
+    (newline)
+    (if (null? path)
         0
-        (let ((result (assoc last-node path-lst)))
-          (if result
-              (+ (steps-counter (cadr result)) 1)
-              0)))))  ;Return 0 if assoc returns #f
+        ;else
+        (+ (steps-counter (cdr path)) 1))))
 
 (define draw-path
   (lambda (path)
