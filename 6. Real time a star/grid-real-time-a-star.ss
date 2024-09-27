@@ -1,13 +1,15 @@
 (define path-lst '())
 (define visited 1)
 (define current-node start) ;current-node must be accessible anywhere
+;(display current-node)
 
 (define expand 
   (lambda (point)
     ;(display "expand")
+    ;(newline)
     (let ((lst (adjacentv point)))
      ;(display "expand list")
-      ;(display lst)
+     ;(display lst)
       (set-lst-visited lst)
       (add-to-path-lst lst point)
       (let loop ((exhaust-lst lst))
@@ -50,28 +52,25 @@
   (lambda (grid count stop-count)
     (pause pause-num)
     (expand robot)
-    (let ((next-robot (front)))
+    ;(display "search 2")
+    ;(newline)
+    (let* ((next-robot (front)))
       (cond
         ((null? next-robot)
          (display "Cannot reach the goal") (newline))
         ((equal? next-robot goal)
          (set! robot (extract))
+         (set! current-node robot)
          (draw-moved-robot (robot-x) (robot-y))
          (display "Found") (newline)
-         (let ((path (get-path goal)))
-           (draw-path path)
-           (display path))
-         (newline))
+         '())
         ((>= count stop-count)
          (display "Took too long") (newline))
-        ((> (get-steps-count next-robot) 1) ;If frontier isn't adjacent
+        ((> (get-steps-count next-robot) 2) ;If frontier isn't adjacent
          (draw-visited (car robot) (cadr robot))
-         (display "back to start")
-         (newline)
-         (walk-back (reverse(get-path robot))) ;Walk to the start
-         (display "to new frontiers")
-         (newline)
-         (walk-back (get-path next-robot)) ;Walk to far frontier
+         ;(display "to new frontiers")
+         ;(newline)
+         (walk-back (cdr(get-path next-robot))) ;Walk to far frontier
          (set! robot (extract))
          (set! current-node robot)
          (search2 grid (+ count 1) stop-count))
@@ -81,59 +80,51 @@
          (set! current-node robot)
          (draw-moved-robot (robot-x) (robot-y))
          (search2 grid (+ count 1) stop-count))))))
-
-         ;Alright so what you have now isnt working, I think we make a new search function that is called whenever
-         ;the frontier isnt adjacent, we then use a new expand function that only expands to visited nodes,
-         ;probably need to mess with grid-new to do this, but yeah we go on visited nodes, and just do the exact same process as search2
-         ;except a little different, but we have that return the path to the far frontier, then we walk that path
-
-         ;so yeah probably not that bad
-
+        
 (define walk-back
   (lambda (path)
     ;(display "backtracking along path: ")
     ;(display path)
-    ;(newline)
     (cond
-      ((or (null? path) (equal? (car path) current-node))
+      ((null? path)
        '()) ;Stop if path is empty or we've reached current-node
       (else
        (let ((next-node (car path)))
-         (display "currently stepping to ")
-         (display next-node)
-         (newline)
+         ;(display "currently stepping to ")
+         ;(display next-node)
+         ;(newline)
          (draw-moved-robot (car next-node) (cadr next-node)) 
-         (pause 10000000)  ;Add a small pause between movements
+         (pause 10000000)  ;Add a pause between movements, so you can actually see them happening
          (walk-back (cdr path)))))))
         
 (define get-path
   (lambda (last-node)
+    ;(display "get-path")
+    ;(newline)
     (if (equal? last-node current-node)
         (list current-node)
-        (let ((result (assoc last-node path-lst)))
-          (if result
-              (let ((next-node (cadr result)))
-                (append (get-path next-node) (list last-node)))
-              '())))))  ;Return an empty list if assoc returns #f
+        ;else
+        (search3 grid 0 20000 last-node))))
 
 (define get-steps-count ;get g(n)
   (lambda (node)
     ;(newline)
     ;(display "get-steps-count")
-    ;(newline)
     (if (equal? node current-node)
         0
         ;else
-        (steps-counter node))))
+        (steps-counter (get-path node)))))
 
 (define steps-counter
-  (lambda (last-node)
-    (if (equal? last-node current-node)
+  (lambda (path)
+    ;(display "steps-counter")
+    ;(display (length path))
+    ;(pause 10000000)    
+    ;(newline)
+    (if (null? path)
         0
-        (let ((result (assoc last-node path-lst)))
-          (if result
-              (+ (steps-counter (cadr result)) 1)
-              0)))))  ;Return 0 if assoc returns #f
+        ;else
+        (+ (steps-counter (cdr path)) 1))))
 
 (define draw-path
   (lambda (path)

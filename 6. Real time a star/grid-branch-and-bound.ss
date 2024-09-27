@@ -1,118 +1,116 @@
-(define path-lst '())
-(define visited 1)
+(define path-lst2 '())
+(define visited2 2)
+(define fix-later '())
+(define robot2 robot)
 
-(define expand 
+(define expand2
   (lambda (point)
-    ;(display "expand")
-    (let ((lst (adjacentv point)))
-     ;(display "expand list")
-      ;(display lst)
-      (set-lst-visited lst)
-      (add-to-path-lst lst point)
+    ;(newline)
+    ;(display "expand2")
+    (let ((lst (adjacentv2 point)))
+     ;(display "expand list2")
+     ;(display lst)
+      (set-lst-visited2 lst)
+      (add-to-path-lst2 lst point)
       (let loop ((exhaust-lst lst))
         (if (null? exhaust-lst) '()
        ;else
-       (begin (insert (car exhaust-lst)) (loop (cdr exhaust-lst))))
-      ))))
+       (begin (insert2 (car exhaust-lst)) (loop (cdr exhaust-lst))))))
+    ))
 
-(define add-to-path-lst
+(define add-to-path-lst2
   (lambda (lst point)
     (if (not (null? lst))
        (let ((child-parent (list (car lst) point)))
-         (set! path-lst (cons child-parent path-lst))
-         (add-to-path-lst (cdr lst) point)))))
+         (set! path-lst2 (cons child-parent path-lst2))
+         (add-to-path-lst2 (cdr lst) point)))))
 
-(define set-lst-visited 
+(define set-lst-visited2
   (lambda (lst)
     (if (null? lst)
         '()
     ;else
         (let ((x (car lst)))
-          (draw-pt-frontier x)
-          (block-set! x visited)
-          (set-lst-visited (cdr lst))))))
-  
-(define draw-pt-frontier
-  (lambda (pt)
-    (draw-frontier (car pt) (cadr pt))))
+          (block-set! x visited2)
+          (set! fix-later (cons x fix-later))
+          (set-lst-visited2 (cdr lst))))))
 
-(define search
-  (lambda (grid stop-count)
-    ;(display "search")
-    (block-set! start visited)
-    (set! path-lst (list (list start '())))
-    (search2 grid 1 stop-count)))
-
-(define search2
-  (lambda (grid count stop-count)
-    ;(display "search2")
-    ;(display heap)
+(define search3
+  (lambda (grid count stop-count next-node)
+    ;(display "search3")
     ;(newline)
-    (pause pause-num)
+    (if (not (null? current-node))
+        (begin (set! robot2 current-node) (block-set! current-node visited2))
+    ;else
+        '())
+    (set! fix-later (cons current-node fix-later))
+    (set! path-lst2 (list (list current-node '())))
+    (search4 grid 1 stop-count next-node)))
+
+(define search4
+  (lambda (grid count stop-count next-node)
+    ;(display "search4")
+    ;(display heap2)
+    ;(newline)
     ;(display count)
     ;(newline)
-    (expand robot)
-    (let ((next-robot (front)))
+    (expand2 robot2)
+    (let ((next-robot (front2)))
       (cond
         ((null? next-robot)
           (display "Cannot reach the goal")
           (newline))
-        ((equal? next-robot goal)
-          (set! robot (extract))
-          (draw-moved-robot (robot-x) (robot-y))
-          (display "Found")
-          (newline)
-          (let ((path (get-path goal)))
-            (draw-path path)
-            (display path))
-          (newline))
+        ((equal? next-robot next-node)
+          (set! robot2 (extract2))
+          ;(display "Found")
+          ;(newline)
+          (let ((path2 (get-path2 next-node)))
+            ;(display path2)
+            ;(newline)
+        (let loop ((exhaust-lst fix-later))
+              (cond
+                ((null? exhaust-lst) '())
+                ((equal? (car exhaust-lst) goal) (begin (block-set! (car exhaust-lst) -1)(loop(cdr exhaust-lst))))
+                (else (begin (block-set! (car exhaust-lst) visited) (loop (cdr exhaust-lst))))))
+         (set! fix-later '())
+         (clearheap2)
+         ;(display "here?") ;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+         (set! path-lst2 '())
+            path2))
         ((>= count stop-count)
           (display "Took too long")
           (newline))
         (else
-          (draw-visited (car robot) (cadr robot))
-          (set! robot (extract))
-          (draw-moved-robot (robot-x) (robot-y))
-          (search2 grid (+ count 1) stop-count))))))
-    
-(define get-path
+          (set! robot2 (extract2))
+          (search4 grid (+ count 1) stop-count next-node))))))
+
+(define get-path2
   (lambda (last-node)
-  ;(display "get-path")
+  ;(display "get-path2")
   ;(display last-node)
-    (if (equal? last-node start)
-      (list start)
+  ;(newline)
+    (if (equal? last-node current-node)
+      (list current-node)
     ;else
-      (let ((next-node (cadr (assoc last-node path-lst))))
-        (append (get-path next-node) (list last-node))))))
+      (let ((next-node (cadr (assoc last-node path-lst2))))
+        (append (get-path2 next-node) (list last-node))))))
 
-(define get-steps-count
+(define get-steps-count2
   (lambda (node)
+    ;(display "get-steps-count2")
     ;(newline)
-    ;(display "get-steps-count")
-    ;(newline)
-    (if (equal? node start)
+    (if (equal? node current-node)
         0
         ;else
-        (steps-counter node))))
+        (steps-counter2 node))))
 
-(define steps-counter
+(define steps-counter2
   (lambda (last-node)
+    ;(display "steps-counter2")
     ;(newline)
-    ;(display "steps-counter")
-    ;(newline)
-    (if (equal? last-node start)
+    (if (equal? last-node current-node)
         0
         ;else
-        (let ((next-node (cadr (assoc last-node path-lst))))
-          (+ (steps-counter next-node) 1)))))
+        (let ((next-node (cadr (assoc last-node path-lst2))))
+          (+ (steps-counter2 next-node) 1)))))
 
-(define draw-path
-  (lambda (path)
-    (cond 
-      ((not (null? path))
-         (draw-pt-path-node (car path))
-         (draw-path (cdr path))))))
-  
-(define draw-pt-path-node
-  (lambda (point)
-    (draw-path-node (car point) (cadr point))))
