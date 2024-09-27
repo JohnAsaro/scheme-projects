@@ -16,6 +16,8 @@
        (begin (insert (car exhaust-lst)) (loop (cdr exhaust-lst))))
       ))))
 
+
+
 (define add-to-path-lst
   (lambda (lst point)
     (if (not (null? lst))
