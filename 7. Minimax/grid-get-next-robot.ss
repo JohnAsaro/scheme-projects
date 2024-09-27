@@ -1,4 +1,4 @@
-(define depth 10) ;depth, adjustable
+(define depth 3) ;depth, adjustable
 (define flag #f)
 
 (define get-next-robot 
@@ -63,12 +63,12 @@
         (let ((point (cadr (car lst))))  ;Check that this returns a point
           (if (pair? point)
               (cons (get-next-robot point)
-                    (minimax (cdr lst)))
+                    (minimax_max (cdr lst)))
               ;else if its not returning a point then just ignore this iteration
               (begin ;(display "Error: Expected a pair, got ")
                      ;(display point)
                      ;(newline)
-                     (minimax(cdr lst))))))))
+                     (minimax_max(cdr lst))))))))
 
 (define minimax_min
   (lambda (lst)
@@ -88,9 +88,9 @@
         (let ((point (cadr (car lst))))  ;Check that this returns a point
           (if (pair? point)
               (cons (get-next-goal point)
-                    (minimax (cdr lst)))
+                    (minimax_min (cdr lst)))
               ;else if its not returning a point then just ignore this iteration
               (begin ;(display "Error: Expected a pair, got ")
                      ;(display point)
                      ;(newline)
-                     (minimax(cdr lst))))))))
+                     (minimax_min(cdr lst))))))))
