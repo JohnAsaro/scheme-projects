@@ -72,7 +72,7 @@
 
 (define minimax_min
   (lambda (lst)
-    (set! flag #t)
+    ;(set! flag #t)
     ;(display "current lst")
     ;(display lst)
     ;(newline)
