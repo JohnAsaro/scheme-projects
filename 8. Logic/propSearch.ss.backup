@@ -1,3 +1,4 @@
+
 (define rules
   '(
   ;finish conditions  
@@ -18,7 +19,7 @@
 
 
 (define facts
-  '(goal22 visited00 -obstacle11 obstacle21))
+  '(goal22 visited00 obstacle11 obstacle21))
 
 (define ModusPonens
   (lambda (rule)
@@ -29,16 +30,6 @@
     (cond
       [(null? b) '()] 
       [(member (car b) facts) (ModusPonens2 (cdr b) a)]
-      [(and (symbol? (car b)) 
-            (let* ((symbol-str (symbol->string (car b)))
-                   (positive-symbol-string (if (and (>= (string-length symbol-str) 2)
-                                                     (equal? (substring symbol-str 0 1) "-"))
-                                                 (substring symbol-str 1 (string-length symbol-str))
-                                                 symbol-str)))
-              (string->symbol positive-symbol-string)
-       (if (not (member (string->symbol positive-symbol-string) facts))
-           (ModusPonens2 (cdr b) a)  
-           '())))]
       [else 
        (if (member (car b) facts)
            (ModusPonens2 (cdr b) a)
