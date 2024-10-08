@@ -1,31 +1,126 @@
-(define numcolrow 3) ;we assume a 3x3 grid, this is adjustable but there isnt rules accounting for more than a 3x3 grid
+;-------------------------------------------------------------------------------------------------------------------------------------
+;GLOBAL VARIABLES
+(define numcolrow 3) ;we assume a 3x3 grid, this is adjustable
+(define path '()) ;to track of blocks we have already "expanded" from
+(define frontiers '())
+;-------------------------------------------------------------------------------------------------------------------------------------
+;RULES FUNCTIONS
 
-(define rules
-  '(
-  ;finish conditions 
-  ;if visited node x = true and goal node x = true, then finished = true 
-  (((and ((isVisited? '(x y)) (isGoal? '(x y))))) (finished))
+(define finish-rule
+    (lambda (pt)
+      
+        (newline)
+        (display "finish rule called with ")
+        (display pt)
+      
+        (if 
+            (and (isVisited? pt) (isGoal? pt)) ;if block at xy is visited and its the goal
+            (begin
+                (set! facts (append facts '(finished))) ;append finished to facts, we are done
+                #t ;return true
+            ) 
+            ;else
+            #f ;otherwise return false
+        )
+    )
+)
 
-  ;movement conditions
-  ;if legal move make it
-  ;unify takes care of obstacle detection and checking if we have already visited a certain point, so we do not need a rule for those
-  (((and ((isVisited? '(x1 y1)) (unify '(x1 y1) '(x2 y2))))) (visited '(x2 y2)))
-  
-  ;get height 
-  ((isLow? '(x y)) (height-low '(x y)))
-  ((isMiddle? '(x y)) (height-middle '(x y)))
-  ((isHigh? '(x y)) (height-high '(x y)))
+(define move-rule
+    (lambda (pt1 pt2)  ;pt1 = (x1 y1), pt2 = (x2 y2)
+       
+        (newline)
+        (display "move rule called with ")
+        (display pt1)
+        ("and ")
+        (display pt2)
+       
+        ;unify takes care of obstacle detection and checking if we have already visited a certain point, so we do not need a rule for those
+        (if 
+            (and (isVisited? pt1) (unify pt1 pt2)) ;if legal move and we have visited the starting postion
+            (begin
+                (set! facts (append facts (list 'visited pt2))) ;add new move to facts
+                (set! path (append path pt2)) ;add new visited to path
+                #t ;return true
+            )
+            ;else
+            #f ;return false
+        )
+    )
+)
 
-  ;get stability
-  ((isStable? '(x y)) (stable '(x y)))
-  ))
+(define set-height 
+    (lambda (pt)
+
+        (newline)
+        (display "set-height called with ")
+        (display pt)
+    
+        (cond 
+            [(isLow? pt) (set! facts (append facts (list 'height-low pt)))] ;if its touching the bottom of the grid it is low
+            [(isMiddle? pt) (set! facts (append facts (list 'height-middle pt)))] ;if its not touching the bottom or top of the grid its in the middle
+            [(isHigh? pt) (set! facts (append facts (list 'height-high pt)))] ;if its touching the bottom of the top of the grid it is high
+            [else (display "Error, we somehow got out of bounds")]
+        )
+    )
+)
+
+(define set-stability 
+    (lambda (pt)
+
+        (newline)
+        (display "set-stability called with ")
+        (display pt)
+        
+        (if 
+            (isStable? pt) ;if we are not bordering the grids bounds, we are stable
+            (begin
+                (append facts (list 'stable pt)) ;add that pt is stable to facts
+                #t ;return true
+            )
+            ;else
+            (begin
+                (append facts (list 'unstable pt)) ;add that pt is unstable to facts
+                #f ;return false
+            )
+        )
+    )
+)
+
+;(define rules ;delete later
+;  '(
+;  ;finish conditions 
+;  ;if visited node x = true and goal node x = true, then finished = true 
+;  (((and ((isVisited? '(x y)) (isGoal? '(x y))))) (finished))
+;
+;  ;movement conditions
+;  ;if legal move make it
+;  ;unify takes care of obstacle detection and checking if we have already visited a certain point, so we do not need a rule for those
+;  (((and ((isVisited? '(x1 y1)) (unify '(x1 y1) '(x2 y2))))) (visited '(x2 y2)))
+;  
+;  ;get height 
+;  ((isLow? '(x y)) (height-low '(x y)))
+;  ((isMiddle? '(x y)) (height-middle '(x y)))
+;  ((isHigh? '(x y)) (height-high '(x y)))
+;
+;  ;get stability
+;  ((isStable? '(x y)) (stable '(x y)))
+;  ))
+;-------------------------------------------------------------------------------------------------------------------------------------
+;FACTS
 
 (define facts
   ;default facts
   '((goal '(2 2)) (visited '(0 0)) (obstacle '(1 1)) (obstacle '(2 1))))
+;-------------------------------------------------------------------------------------------------------------------------------------
+;HELPER FUNCTIONS
 
 (define adjacent
   (lambda (X Y)
+    
+    (newline)
+    (display "adjacent called with ")
+    (display (list X Y))
+
     (let ((max-bound (- numcolrow 1)))  ;max bound based on numcolrow
       (cond ;make sure we stay in bounds
         [(and (> X 0) (> Y 0) (< X max-bound) (< Y max-bound))
@@ -54,6 +149,11 @@
 
 (define notObs? ;checks if this is not an obstacle
     (lambda (pt) ;pt = (X Y)
+
+        (newline)
+        (display "notObs called with ")
+        (display pt)
+
         (let loop ((fact-lst facts))
             (cond
                 [(null? fact-lst) #t] ;if we looked through all our facts and we havent found an obstacle at pt, return true
@@ -70,6 +170,11 @@
 
 (define isVisited? ;checks if we have already visited this
     (lambda (pt) ;pt = (X Y)
+
+        (newline)
+        (display "isVisited? called with ")
+        (display pt)
+
         (let loop ((fact-lst facts))
             (cond
                 [(null? fact-lst) #f] ;if we looked through all our facts and we havent found this thing is already visited, than it isnt visited
@@ -86,6 +191,11 @@
 
 (define isGoal?
     (lambda (pt)
+
+        (newline)
+        (display "isGoal? called with ")
+        (display pt)
+
         (let loop ((fact-lst facts))
             (cond
                 [(null? fact-lst) #f] ;if we looked through all our facts and we havent found this thing is the goal, then we return false
@@ -102,6 +212,13 @@
 
 (define isLow? ;for height, if its touching the bottom of the grid it is low
     (lambda (pt)
+        
+        (newline)
+        (display "isLow? called with ")
+        (display pt)
+        (display " Y is ")
+        (display (cdr (cadr pt)))
+        
         (let ((Y (cadr pt)))
             (if (= Y 0)
                 #t  
@@ -114,6 +231,13 @@
 
 (define isMiddle? ;for height, if its not touching the bottom or top of the grid its in the middle
     (lambda (pt)
+
+        (newline)
+        (display "isMiddle? called with ")
+        (display pt)
+        (display " Y is ")
+        (display (cadr pt))
+
         (let ((Y (cadr pt)))
             (if (and (> Y 0) (< Y numcolrow))
                 #t
@@ -126,6 +250,13 @@
 
 (define isHigh? ;for height, if its touching the bottom of the top of the grid it is high
     (lambda (pt)
+
+        (newline)
+        (display "isHigh? called with ")
+        (display pt)
+        (display " Y is ")
+        (display (cadr pt))
+
         (let ((Y (cadr pt)))
             (if (= Y numcolrow)
                 #t  
@@ -138,6 +269,11 @@
 
 (define isStable? ;for stability, if we are not bordering the grids bounds, we are stable
     (lambda (pt)
+
+        (newline)
+        (display "isStable? called with ")
+        (display pt)
+
         (if 
             (= (length (adjacent (car pt) (cadr pt))) 4) ;if we expanded to 4 adjacent points
             #t
@@ -148,52 +284,123 @@
 )
 
 (define unify
-    (lambda (p1 p2) ;p1 = (X1 Y1), p2 = (X2 Y2)
-        (if (and (notObs? p2) (not (isVisited? p2))) ;if p2 is not an obstacle, proceed
-            (let loop ((adj (adjacent (car p1) (cadr p1)))) ;check if this is a legal move
+    (lambda (pt1 pt2) ;pt1 = (X1 Y1), pt2 = (X2 Y2)
+        
+        (newline)
+        (display "unify called with ")
+        (display pt1)
+        ("and ")
+        (display pt2)
+
+        (if (and (notObs? pt2) (not (isVisited? pt2))) ;if pt2 is not an obstacle, proceed
+            (let loop ((adj (adjacent (car pt1) (cadr pt1)))) ;check if this is a legal move
                 (cond 
-                    [(null? adj) #f] ;if we looked through all moves adjacent to p1, and none of them are p2, then its not a legal move
-                    [(equal? (car adj) p2) #t] ;if p2 is adjacent, we return true
+                    [(null? adj) #f] ;if we looked through all moves adjacent to pt1, and none of them are pt2, then its not a legal move
+                    [(equal? (car adj) pt2) #t] ;if pt2 is adjacent, we return true
                     [else (loop (cdr adj))] ;else keep going
                 ))
         ;else
-        #f ;p2 was an obstacle therefore this was not a legal move
+        #f ;pt2 was an obstacle therefore this was not a legal move
         )
     )
 )
 
-(define ModusPonens
-  (lambda (rule)
-    (ModusPonens2 (car rule) (cadr rule))))
-      
-(define ModusPonens2 
-  (lambda (rule result)
-    (if (rule) ;if rule is true
-        result ;spit out rule
-    ;else
-        '() ;else null
-    )
-  )
-)
+;-------------------------------------------------------------------------------------------------------------------------------------
+;SEARCH
 
 (define search
   (lambda (count)
+    ;(display facts)
     (cond
       ((member 'finished facts)
-          (display "goal found")
-          (newline))
+          (begin
+            (display "goal found")
+            (newline)
+            (display "path is ")
+            (display path)
+            (newline)
+            (display "facts are ")
+            (display facts)
+            (newline)
+          )
+          )
       ((<= count 0)
         (display "not found")
         (newline))
       (else
-        (let* ((firstRule (car rules))
-               (remainingRules (append (cdr rules) (list firstRule)))
-               (newFact (ModusPonens firstRule)))
-          (cond 
-            ((null? newFact) ;result of modus ponens was false
-                (set! rules remainingRules)
-                (search (- count 1)))
-            (else
-                (set! rules remainingRules)
-                (set! facts (append newFact facts))
-                (search (- count 1)))))))))
+        (let*         
+            ((firstFact (car facts)) ;iterate through facts
+                (remainingFacts (append (cdr facts) (list facts)))
+                )
+
+            (newline)
+            (display "let* condition in search iteration ")
+            (display count)
+            (display "successfully reached")
+           
+            (cond ;apply rules appropriately
+                [(equal? (car firstFact) 'goal)
+                    (begin
+                        
+                        (newline)
+                        (display "goal cond in search iteration ")
+                        (display count)
+                        (display " successfully reached")
+                        
+                        (finish-rule (cadr firstFact))
+                        (set! facts remainingFacts) ;move on to next fact
+                        (search (- count 1)) 
+                    )
+                ] ;if we are checking the goal, see if we have reached it
+                [(equal? (car firstFact) 'visited) ;if we are checking a visited
+                    (let ((pt (cadr firstFact))) ;we are now considering the pt connected to this fact
+                            
+                        (newline)
+                        (display "move cond in search iteration ")
+                        (display count)
+                        (display " successfully reached")
+                        
+                        (if (not (member pt path)) ;if our pt is not part of the path already
+                        (begin 
+                            
+                            (newline)
+                            (display "and also we are doing ") 
+                            (display pt)
+                            (display "which is not part of path ")
+                            (display "path is currently ")
+                            (display path)
+                            (display " but when we add to it, it will be ")
+
+                            (set! path (append path pt)) ;add considered pt to path
+
+                            (display path)
+
+                            (set-height pt) ;apply height rule
+                            (set-stability pt) ;apply stability rule
+                            (let loop ((adj (adjacent (car pt) (cadr pt)))) ;apply the move rule to the adjacent blocks
+                                (if
+                                    (null? adj) '() ;if we looked through all moves adjacent to pt, terminate
+                                    ;else
+                                    (begin
+                                        (move-rule pt (car adj)) ;try and move to adjacent pt 
+                                        (loop (cdr adj)) ;keep going
+                                    )
+                                )
+                            )
+                        ))
+                        (set! facts remainingFacts) ;move on to next fact
+                        (search (- count 1))
+                    )
+                    
+                 ] 
+                [else
+                    (set! facts remainingFacts) ;move on to next fact
+                    (search count) ;we didn't really look over something that was relevant so we don't decrease the count
+                ]
+            )
+        )
+      )
+    )
+  )
+)
+;-------------------------------------------------------------------------------------------------------------------------------------
