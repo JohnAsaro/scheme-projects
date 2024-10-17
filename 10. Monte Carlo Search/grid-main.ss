@@ -1,6 +1,6 @@
 
 (define num-col-row 20)
-(define pause-num 1000000)
+(define pause-num 10000000)
 (define size (floor (/ 700 num-col-row)))
 (define obstacle-density 10)
 (define step-count 0)

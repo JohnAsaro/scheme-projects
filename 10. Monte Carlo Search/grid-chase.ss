@@ -49,7 +49,7 @@
 
 (define search-robot
   (lambda (grid)
-    (let ((next-robot (get-next-robot robot)))
+    (let ((next-robot (r-get-next-robot robot)))
       (set! robot next-robot)
       (if (not (null? robot))
         (draw-moved-robotx robot)))))

@@ -17,7 +17,7 @@
               (if (eq? (modulo curr_depth 2) 0) ;if max
                 (loop (+ curr_depth 1) (r-minimax_max r_lst))
                 ;else
-                (loop (+ curr_depth 1) (r-minimax_min r_lst)))
+                (loop (+ curr_depth 1) (r-minimax_max r_lst)))
               ;else
               (begin (set! flag #f) r_lst))))
       ;(display "better_lst")
@@ -50,7 +50,7 @@
               (if (eq? (modulo curr_depth 2) 0) ;if max
                 (loop (+ curr_depth 1) (r-minimax_max r_lst))
                 ;else
-                (loop (+ curr_depth 1) (r-minimax_min r_lst)))
+                (loop (+ curr_depth 1) (r-minimax_max r_lst)))
               ;else
               (begin (set! flag #f) r_lst))))
       ;(display "better_lst")
@@ -112,7 +112,7 @@
                      (r-minimax_max (cdr lst)))
                      ))))))
 
-(define r-minimax_min
+(define r-minimax_max
   (lambda (lst)
     ;(set! flag #t)
     ;(display "current min lst")
@@ -131,9 +131,9 @@
         (let ((point (cadr (car lst))))  ;Extract point from weird list
           (if (pair? point)
               (cons (r-get-next-goal-2 point)
-                    (r-minimax_min (cdr lst)))
+                    (r-minimax_max (cdr lst)))
               ;else
               (begin ;Extract point from not weird list
                     (cons (r-get-next-goal-2 (car lst))
-                    (r-minimax_min (cdr lst)))
+                    (r-minimax_max (cdr lst)))
                      ))))))

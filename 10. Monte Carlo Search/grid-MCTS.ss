@@ -1,7 +1,7 @@
-;nodes are represented as a list ((xpos ypos) n score UCB (list of children))
-(define num-exp 5)
+;nodes are represented as a list ((xpos ypos) n score UCB (list of children) exp-num)
+(define num-exp 100)
 (define C 2)
-(define rollout-depth 5)
+(define rollout-depth 2)
 
 (define get-next-robot
     (lambda (robot)
@@ -37,7 +37,7 @@
 
 (define build-tree 
   (lambda (root)
-    (build-tree2 0 (list robot 1 1 0 '()) (list (list robot 1 1 0 '())))))
+    (build-tree2 0 (list robot 1 1 0 '() 0) (list (list robot 1 1 0 '() 0)))))
 
 (define build-tree2
   (lambda (count root tree)
@@ -51,26 +51,27 @@
                (let loop ((curr root))
                  (cond
                    ((equal? curr (get-root tree))
-                     (set! new-tree (update-tree new-tree root (list (node-get-pt curr) (+ (node-get-n curr) 1) 0 0 (node-get-children curr))))
+                     (set! new-tree (update-tree new-tree root (list (node-get-pt curr) 
+                     (+ (node-get-n curr) 1) 0 0 (node-get-children curr) (node-get-exp-num curr))))
                      (build-tree2 count (get-root new-tree) new-tree))                        
                    (else
                      (set! new-tree (update-tree new-tree curr (list (node-get-pt curr) (+ (node-get-n curr) 1)
                      (/ (+ new-score (node-get-score curr) (node-get-n curr))) 
                      (UCB (/ (+ new-score (node-get-score curr) (node-get-n curr))) (+ (node-get-n curr) 1) (node-get-n (node-get-parent curr tree)))
-                     (node-get-children curr))))
+                     (node-get-children curr) (node-get-exp-num curr))))
                      (loop (node-get-parent curr tree))))))))  
           (else
             (let ((new-tree tree))              
               (let loop ((moves (get-moves (car root))))
                 (if (not (null? moves))
-                (begin (set! new-tree (cons (list (car moves) 1 1 9999999 '()) new-tree))
+                (begin (set! new-tree (cons (list (car moves) 1 1 9999999 '() count) new-tree))
                 (loop (cdr moves)))))              
                 
                 (set! new-tree (update-tree new-tree root (list (node-get-pt root) (node-get-n root) (node-get-score root)
-                (node-get-UCB root) (get-moves (car root)))))
+                (node-get-UCB root) (get-moves (car root)) (node-get-exp-num root))))
               
               (let ((new (list (node-get-pt root) (+ (node-get-n root) 1) (node-get-score root) 
-              (UCB (node-get-score root) (+ (node-get-n root) 1) (node-get-n (node-get-parent root tree))) (node-get-children root))))
+              (UCB (node-get-score root) (+ (node-get-n root) 1) (node-get-n (node-get-parent root tree))) (node-get-children root) (node-get-exp-num root))))
                 (build-tree2 (+ count 1) (get-root new-tree) (update-tree new-tree root new)))))))    
       (else
         (build-tree2 count (highest-UCB (node-get-children root) tree) tree)))))
@@ -149,7 +150,7 @@
   (lambda (node tree)
    (cond
      ((null? tree) '())
-     ((member (node-get-pt node) (node-get-children (car tree))) (car tree))
+     ((and (member (node-get-pt node) (node-get-children (car tree))) (>= (node-get-exp-num node) (node-get-exp-num (car tree)))) (car tree))
      (else (node-get-parent node (cdr tree)))))) 
     
 (define leaf?
@@ -181,4 +182,7 @@
 (define node-get-children
   (lambda (node)
     (car (cdr (cdr (cdr (cdr node)))))))
-      
+
+(define node-get-exp-num
+  (lambda (node)
+    (car (cdr (cdr (cdr (cdr (cdr node))))))))
