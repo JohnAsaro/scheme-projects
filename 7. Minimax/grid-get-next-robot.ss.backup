@@ -1,4 +1,4 @@
-(define depth 6) ;depth, adjustable
+(define depth 900000000) ;depth, adjustable
 (define flag #f)
 
 (define get-next-robot 
@@ -11,22 +11,16 @@
            (flst (calculate-h lst0))
            (lst (map list flst lst0))
            (better_lst lst))
-      (let exhaust ((exhaust_lst lst))
-        (if null? lst '())
-        ;else
-          (if(not flag)
-            (let loop ((curr_depth 0) (r_lst exhaust_lst))
-              (display "depth: ")
-              (display curr_depth)
-              (if (< curr_depth depth)
-                  (if (eq? (modulo curr_depth 2) 0) ;if max
-                    (loop (+ curr_depth 1) (minimax_max r_lst))
-                    ;else
-                    (loop (+ curr_depth 1) (minimax_min r_lst)))
-                  ;else
-                  (begin (set! flag #f) r_lst))))
-        (exhaust (cdr exhaust_lst))
-      )
+      (if(not flag)
+        (let loop ((curr_depth 0) (r_lst better_lst))
+          (if (< curr_depth depth)
+              (if (eq? (modulo curr_depth 2) 0) ;if max
+                (loop (+ curr_depth 1) (minimax_max r_lst))
+                ;else
+                (loop (+ curr_depth 1) (minimax_min r_lst)))
+              ;else
+              (begin (set! flag #f) r_lst))))
+      ;else
       ;(display "better_lst")
       ;(display better_lst)
       ;(newline)
@@ -55,12 +49,12 @@
 (define minimax_max
   (lambda (lst)
     (set! flag #t)
-    (display "current lst")
-    (display lst)
-    (newline)
-    (display "current queue")
-    (display queue)
-    (newline)
+    ;(display "current lst")
+    ;(display lst)
+    ;(newline)
+    ;(display "current queue")
+    ;(display queue)
+    ;(newline)
     (if (null? lst)
         (begin ;(display "Iterated through list")
          ;(newline)

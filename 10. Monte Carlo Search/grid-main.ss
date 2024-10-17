@@ -14,6 +14,7 @@
 (define grid (convert-grid grid0))
 (load "grid-new.ss")
 (load "grid-get-next-goal.ss")
+;(load "grid-MCTS.ss")
 (load "grid-get-next-robot.ss")
 (load "grid-chase.ss")
 
