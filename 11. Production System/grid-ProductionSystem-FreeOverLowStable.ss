@@ -32,9 +32,6 @@
     (r8 (if (backtrack_to x) (not delete_adjacents))
         (delete (backtrack_to x))
         (execute (backtrack_to x)))
-    ;(r9 (if ()())
-    ;  (delete ())
-    ;  (execute ()))
 ))
 
 
@@ -104,7 +101,6 @@
 
 (define get-observed-facts
   (lambda (point-lst)
-    ;(display facts) ;for troubleshooting, remove later ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (if (null? point-lst)
        '()
     ;else
