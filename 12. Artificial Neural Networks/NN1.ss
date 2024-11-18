@@ -2,14 +2,14 @@
 
 ;(define threshold-weights '(((0.5 1 1)))) ;This is an "OR" operator
 
-;(define threshold-weights '(((.6 1 -.5) (.6 -.5 1)) 
-;                           ((.4 1 1)))) ;This is a "XOR" operator
+(define threshold-weights '(((1.25 1 -.75) (1.3 -.75 1)) 
+                           ((.65 1.1 1.1)))) ;This is a "XOR" operator
 
-(define threshold-weights '(((1.5 1 1) (-.1 -.5 -.5)) 
-                           ((.5 1 1)))) ;This is a "NOT XOR" operator
+;(define threshold-weights '(((4 3 3) (-2 -3 -3)) 
+;                           ((.8 1 1)))) ;This is a "NOT XOR" operator
 
 
-(define NN
+(define NN  
   (lambda (lst)
     (NN2 lst threshold-weights)))
 
@@ -45,5 +45,5 @@
 
 (define g
   (lambda (x)
-    (if (> x 0) 1 0))) ;step function, if x > 0, 1, otherwise 0
+    (/ 1 (+ 1 (exp (- x)))))) ;sigmoid fucntion, turns some number into a value between (0, 1)
 
