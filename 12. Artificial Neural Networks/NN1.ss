@@ -2,11 +2,11 @@
 
 ;(define threshold-weights '(((0.5 1 1)))) ;This is an "OR" operator
 
-(define threshold-weights '(((1.25 1 -.75) (1.3 -.75 1)) 
-                           ((.65 1.1 1.1)))) ;This is a "XOR" operator
+;(define threshold-weights '(((1.3 1 -.85) (1.3 -.85 1)) 
+;                           ((.65 1.25 1.25)))) ;This is a "XOR" operator
 
-;(define threshold-weights '(((4 3 3) (-2 -3 -3)) 
-;                           ((.8 1 1)))) ;This is a "NOT XOR" operator
+(define threshold-weights '(((4 3 3) (-2 -3 -3)) 
+                           ((.8 1 1)))) ;This is a "NOT XOR" operator
 
 
 (define NN  
