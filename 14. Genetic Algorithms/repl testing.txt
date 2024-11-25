@@ -1,0 +1,3 @@
+(define pop (make-pop))
+(define trained-pop (GAtrain pop 500))
+(define eval-pop (GAevaluate-pop trained-pop))
